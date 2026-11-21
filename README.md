@@ -2,7 +2,7 @@
 
 Simulador de circuitos electrónicos en el navegador, con motor de cálculo propio (análisis nodal modificado) y componentes que se pueden crear desde un archivo JSON, a mano o con ayuda de una IA. La descripción completa está en [docs/PROYECTO.md](docs/PROYECTO.md).
 
-**Estado:** Etapa 0 (proyecto configurado). El simulador todavía no existe.
+**Estado:** Etapa 1 (motor DC lineal). El motor resuelve circuitos DC con resistencias, fuentes de voltaje y corriente, fuentes controladas (VCVS, VCCS), y condensadores y bobinas en DC. Se prueba con netlists de texto; todavía no hay lienzo.
 
 ## Requisitos
 
