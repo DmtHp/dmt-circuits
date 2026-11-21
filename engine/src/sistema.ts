@@ -51,6 +51,7 @@ export interface ParametrosAnalisis {
   paso_s: number;
   metodo: MetodoIntegracion;
   factorFuentes: number;
+  usarFormas: boolean;
   gmin_s: number;
   /** Conductancia extra de cada nodo a tierra (plan B "conductancia mínima"); 0 normalmente. */
   gminNodos_s: number;

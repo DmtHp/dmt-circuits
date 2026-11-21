@@ -36,20 +36,63 @@ export interface Resistencia extends ElementoBase {
   resistencia_ohm: number;
 }
 
-/** Fuente de voltaje DC ideal: V(positivo) − V(negativo) = voltaje_v. */
+/**
+ * Seno (SIN en SPICE). Valor en voltios o amperios según la fuente:
+ *   t < retardo:  desplazamiento + amplitud · sen(fase)
+ *   t ≥ retardo:  desplazamiento + amplitud · e^(−amortiguamiento·(t − retardo)) · sen(2π·f·(t − retardo) + fase)
+ */
+export interface FormaSeno {
+  tipo: 'seno';
+  desplazamiento: number;
+  amplitud: number;
+  frecuencia_hz: number;
+  retardo_s?: number;
+  /** θ en 1/s: hace que la amplitud decaiga. 0 si no se indica. */
+  amortiguamiento_1_s?: number;
+  fase_grados?: number;
+}
+
+/**
+ * Pulso periódico (PULSE en SPICE): parte en `inicial`, tras `retardo_s` sube
+ * en `subida_s` hasta `pulsado`, se queda `ancho_s`, baja en `bajada_s` y repite
+ * cada `periodo_s`. Una onda cuadrada es un pulso con subida y bajada cortas.
+ */
+export interface FormaPulso {
+  tipo: 'pulso';
+  inicial: number;
+  pulsado: number;
+  retardo_s: number;
+  subida_s: number;
+  bajada_s: number;
+  ancho_s: number;
+  periodo_s: number;
+}
+
+export type FormaDeOnda = FormaSeno | FormaPulso;
+
+/**
+ * Fuente de voltaje ideal: V(positivo) − V(negativo) = voltaje_v.
+ * Si tiene `forma`, en el análisis transitorio manda la forma de onda
+ * (también en el punto de partida, t = 0); el análisis DC usa voltaje_v.
+ */
 export interface FuenteVoltaje extends ElementoBase {
   tipo: 'fuenteVoltaje';
   positivo: Nodo;
   negativo: Nodo;
   voltaje_v: number;
+  forma?: FormaDeOnda;
 }
 
-/** Fuente de corriente DC ideal: corriente_a circula por dentro de la fuente, de `desde` hacia `hacia`. */
+/**
+ * Fuente de corriente ideal: corriente_a circula por dentro de la fuente, de `desde` hacia `hacia`.
+ * `forma` funciona igual que en la fuente de voltaje.
+ */
 export interface FuenteCorriente extends ElementoBase {
   tipo: 'fuenteCorriente';
   desde: Nodo;
   hacia: Nodo;
   corriente_a: number;
+  forma?: FormaDeOnda;
 }
 
 /**
@@ -80,20 +123,24 @@ export interface FuenteCorrienteControlada extends ElementoBase {
   transconductancia_s: number;
 }
 
-/** En DC, una bobina ideal es un cortocircuito (0 V entre sus terminales). */
+/** Bobina ideal: V = L · dI/dt. En DC es un cortocircuito. */
 export interface Bobina extends ElementoBase {
   tipo: 'bobina';
   a: Nodo;
   b: Nodo;
   inductancia_h: number;
+  /** Corriente de a hacia b al empezar, si el transitorio usa condiciones iniciales. 0 si no se indica. */
+  corrienteInicial_a?: number;
 }
 
-/** En DC, un condensador ideal es un circuito abierto (no pasa corriente). */
+/** Condensador ideal: I = C · dV/dt. En DC es un circuito abierto. */
 export interface Condensador extends ElementoBase {
   tipo: 'condensador';
   a: Nodo;
   b: Nodo;
   capacitancia_f: number;
+  /** V(a) − V(b) al empezar, si el transitorio usa condiciones iniciales. 0 si no se indica. */
+  voltajeInicial_v?: number;
 }
 
 /**

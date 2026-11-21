@@ -1,4 +1,5 @@
 import type { FuenteVoltaje } from '../circuito';
+import { validarForma, valorFuente } from '../formasDeOnda';
 import { exigirFinito, type Primitiva } from './primitiva';
 
 /**
@@ -19,7 +20,7 @@ export const primitivaFuenteVoltaje: Primitiva<FuenteVoltaje> = {
   variablesExtra: 1,
   terminales: (e) => [e.positivo, e.negativo],
   terminalesControl: () => [],
-  validar: (e) => exigirFinito(e.voltaje_v, 'El voltaje'),
+  validar: (e) => [...exigirFinito(e.voltaje_v, 'El voltaje'), ...(e.forma ? validarForma(e.forma) : [])],
   estampar(e, est, ctx, extra) {
     const p = est.indiceNodo(e.positivo);
     const n = est.indiceNodo(e.negativo);
@@ -27,7 +28,7 @@ export const primitivaFuenteVoltaje: Primitiva<FuenteVoltaje> = {
     est.sumarA(n, extra, -1);
     est.sumarA(extra, p, 1);
     est.sumarA(extra, n, -1);
-    est.sumarZ(extra, e.voltaje_v * ctx.factorFuentes);
+    est.sumarZ(extra, valorFuente(e.voltaje_v, e.forma, ctx));
   },
   corriente: (_e, ctx, extra) => ctx.valorExtra(extra),
 };

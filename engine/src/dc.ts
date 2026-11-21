@@ -33,6 +33,7 @@ export function analizarDC(circuito: Circuito, opciones: Partial<OpcionesNewton>
     paso_s: 0,
     metodo: 'euler',
     factorFuentes: 1,
+    usarFormas: false,
     gmin_s: GMIN_S,
     gminNodos_s: 0,
   };

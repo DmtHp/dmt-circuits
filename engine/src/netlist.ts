@@ -6,8 +6,13 @@
  *   R<nombre> a b valor              resistencia (Ω)
  *   C<nombre> a b valor              condensador (F); en DC es un abierto
  *   L<nombre> a b valor              bobina (H); en DC es un corto
- *   V<nombre> + − [DC] valor         fuente de voltaje (V)
- *   I<nombre> desde hacia [DC] valor fuente de corriente (A), circula de `desde` a `hacia` por dentro
+ *   V<nombre> + − [DC] valor [forma] fuente de voltaje (V)
+ *   I<nombre> desde hacia [DC] valor [forma]
+ *                                    fuente de corriente (A), circula de `desde` a `hacia` por dentro
+ *     forma = SIN(desplazamiento amplitud frecuencia [retardo [amortiguamiento [fase°]]])
+ *           | PULSE(inicial pulsado retardo subida bajada ancho período)
+ *     Si hay forma y no valor DC, el valor DC es el de la forma en t = 0.
+ *   C y L aceptan IC=… : voltaje (C) o corriente (L) inicial para el transitorio.
  *   E<nombre> + − c+ c− ganancia     fuente de voltaje controlada por voltaje (VCVS)
  *   G<nombre> desde hacia c+ c− gm   fuente de corriente controlada por voltaje (VCCS, en S)
  *   D<nombre> ánodo cátodo [IS=…] [N=…] [BV=…] [IBV=…]
@@ -27,7 +32,19 @@
  * como la de SPICE, donde "1F" significa 1 femtofaradio.
  */
 
-import type { Circuito, Diodo, Elemento, Limitador } from './circuito';
+import type {
+  Bobina,
+  Circuito,
+  Condensador,
+  Diodo,
+  Elemento,
+  FormaDeOnda,
+  FormaSeno,
+  FuenteCorriente,
+  FuenteVoltaje,
+  Limitador,
+} from './circuito';
+import { evaluarForma } from './formasDeOnda';
 import { ErrorCircuito } from './errores';
 
 const SUFIJOS: Record<string, number> = {
@@ -73,7 +90,12 @@ export function leerNetlist(texto: string): Circuito {
       fallar('las directivas con punto (como .op o .tran) todavía no están soportadas.');
     }
 
-    const partes = linea.split(/\s+/);
+    // Forma de onda entre paréntesis: se separa antes de dividir en palabras.
+    const coincidenciaForma = /\b(sin|pulse)\s*\(([^)]*)\)/i.exec(linea);
+    const sinForma = coincidenciaForma
+      ? `${linea.slice(0, coincidenciaForma.index)} ${linea.slice(coincidenciaForma.index + coincidenciaForma[0].length)}`.trim()
+      : linea;
+    const partes = sinForma.split(/\s+/);
     const nombre = partes[0]!;
     const letra = nombre[0]!.toUpperCase();
 
@@ -118,29 +140,91 @@ export function leerNetlist(texto: string): Circuito {
       if (partes.length < cantidad) fallar(`se esperaba "${forma}".`);
     };
 
+    const leerForma = (): FormaDeOnda | undefined => {
+      if (!coincidenciaForma) return undefined;
+      if (letra !== 'V' && letra !== 'I') fallar('solo las fuentes V e I aceptan formas de onda.');
+      const tipo = coincidenciaForma[1]!.toUpperCase();
+      const numeros = coincidenciaForma[2]!
+        .split(/[\s,]+/)
+        .filter((t) => t !== '')
+        .map((t) => {
+          const v = leerValor(t);
+          if (v === null) fallar(`"${t}" no es un valor válido dentro de ${tipo}(…).`);
+          return v!;
+        });
+      if (tipo === 'SIN') {
+        if (numeros.length < 3 || numeros.length > 6) {
+          fallar('SIN necesita entre 3 y 6 valores: SIN(desplazamiento amplitud frecuencia [retardo [amortiguamiento [fase]]]).');
+        }
+        const [desplazamiento, amplitud, frecuencia_hz, retardo_s, amortiguamiento_1_s, fase_grados] = numeros;
+        const seno: FormaSeno = { tipo: 'seno', desplazamiento: desplazamiento!, amplitud: amplitud!, frecuencia_hz: frecuencia_hz! };
+        if (retardo_s !== undefined) seno.retardo_s = retardo_s;
+        if (amortiguamiento_1_s !== undefined) seno.amortiguamiento_1_s = amortiguamiento_1_s;
+        if (fase_grados !== undefined) seno.fase_grados = fase_grados;
+        return seno;
+      }
+      if (numeros.length !== 7) {
+        fallar('PULSE necesita 7 valores: PULSE(inicial pulsado retardo subida bajada ancho período).');
+      }
+      const [inicial, pulsado, retardo_s, subida_s, bajada_s, ancho_s, periodo_s] = numeros as [
+        number, number, number, number, number, number, number,
+      ];
+      return { tipo: 'pulso', inicial, pulsado, retardo_s, subida_s, bajada_s, ancho_s, periodo_s };
+    };
+    const forma = leerForma();
+    /** Valor DC de una fuente: el escrito, o el de la forma en t = 0. */
+    const valorDC = (que: string, formaEsperada: string): number => {
+      if (forma && partes.length === 3) return evaluarForma(forma, 0);
+      quitarDC();
+      exigirCampos(4, formaEsperada);
+      return valor(3, que);
+    };
+
     switch (letra) {
       case 'R':
         exigirCampos(4, 'R<nombre> a b valor');
         elementos.push({ tipo: 'resistencia', nombre, a: partes[1]!, b: partes[2]!, resistencia_ohm: valor(3, 'la resistencia') });
         break;
-      case 'C':
-        exigirCampos(4, 'C<nombre> a b valor');
-        elementos.push({ tipo: 'condensador', nombre, a: partes[1]!, b: partes[2]!, capacitancia_f: valor(3, 'la capacitancia') });
+      case 'C': {
+        if (partes.length < 4 || partes.length > 5) fallar('se esperaba "C<nombre> a b valor [IC=…]".');
+        const condensador: Condensador = { tipo: 'condensador', nombre, a: partes[1]!, b: partes[2]!, capacitancia_f: valor(3, 'la capacitancia') };
+        const ic = parametros(4, ['IC']).get('IC');
+        if (ic !== undefined) condensador.voltajeInicial_v = ic;
+        elementos.push(condensador);
         break;
-      case 'L':
-        exigirCampos(4, 'L<nombre> a b valor');
-        elementos.push({ tipo: 'bobina', nombre, a: partes[1]!, b: partes[2]!, inductancia_h: valor(3, 'la inductancia') });
+      }
+      case 'L': {
+        if (partes.length < 4 || partes.length > 5) fallar('se esperaba "L<nombre> a b valor [IC=…]".');
+        const bobina: Bobina = { tipo: 'bobina', nombre, a: partes[1]!, b: partes[2]!, inductancia_h: valor(3, 'la inductancia') };
+        const ic = parametros(4, ['IC']).get('IC');
+        if (ic !== undefined) bobina.corrienteInicial_a = ic;
+        elementos.push(bobina);
         break;
-      case 'V':
-        quitarDC();
-        exigirCampos(4, 'V<nombre> + − [DC] valor');
-        elementos.push({ tipo: 'fuenteVoltaje', nombre, positivo: partes[1]!, negativo: partes[2]!, voltaje_v: valor(3, 'el voltaje') });
+      }
+      case 'V': {
+        const fuente: FuenteVoltaje = {
+          tipo: 'fuenteVoltaje',
+          nombre,
+          positivo: partes[1] ?? fallar('faltan los nodos de la fuente.'),
+          negativo: partes[2] ?? fallar('falta el nodo negativo de la fuente.'),
+          voltaje_v: valorDC('el voltaje', 'V<nombre> + − [DC] valor [SIN(…) o PULSE(…)]'),
+        };
+        if (forma) fuente.forma = forma;
+        elementos.push(fuente);
         break;
-      case 'I':
-        quitarDC();
-        exigirCampos(4, 'I<nombre> desde hacia [DC] valor');
-        elementos.push({ tipo: 'fuenteCorriente', nombre, desde: partes[1]!, hacia: partes[2]!, corriente_a: valor(3, 'la corriente') });
+      }
+      case 'I': {
+        const fuente: FuenteCorriente = {
+          tipo: 'fuenteCorriente',
+          nombre,
+          desde: partes[1] ?? fallar('faltan los nodos de la fuente.'),
+          hacia: partes[2] ?? fallar('falta el segundo nodo de la fuente.'),
+          corriente_a: valorDC('la corriente', 'I<nombre> desde hacia [DC] valor [SIN(…) o PULSE(…)]'),
+        };
+        if (forma) fuente.forma = forma;
+        elementos.push(fuente);
         break;
+      }
       case 'E':
         exigirCampos(6, 'E<nombre> + − c+ c− ganancia');
         elementos.push({

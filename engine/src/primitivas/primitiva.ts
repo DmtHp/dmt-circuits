@@ -37,6 +37,8 @@ export interface Contexto {
   readonly metodo: MetodoIntegracion;
   /** Entre 0 y 1: escala las fuentes independientes (plan B "encendido gradual de fuentes"). */
   readonly factorFuentes: number;
+  /** true en el transitorio: las fuentes siguen su forma de onda. false en DC: usan su valor fijo. */
+  readonly usarFormas: boolean;
   /** Conductancia mínima en paralelo con cada unión no lineal, en siemens. */
   readonly gmin_s: number;
   /**
