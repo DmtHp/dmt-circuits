@@ -29,5 +29,5 @@ export const primitivaVCCS: Primitiva<FuenteCorrienteControlada> = {
     est.sumarA(h, cp, -gm);
     est.sumarA(h, cn, gm);
   },
-  corriente: (e, v) => e.transconductancia_s * (v(e.controlPositivo) - v(e.controlNegativo)),
+  corriente: (e, ctx) => e.transconductancia_s * (ctx.voltaje(e.controlPositivo) - ctx.voltaje(e.controlNegativo)),
 };

@@ -13,7 +13,7 @@ export const primitivaBobina: Primitiva<Bobina> = {
   terminales: (e) => [e.a, e.b],
   terminalesControl: () => [],
   validar: (e) => exigirPositivo(e.inductancia_h, 'La inductancia', 'H'),
-  estampar(e, est, extra) {
+  estampar(e, est, _ctx, extra) {
     const a = est.indiceNodo(e.a);
     const b = est.indiceNodo(e.b);
     est.sumarA(a, extra, 1);
@@ -21,5 +21,5 @@ export const primitivaBobina: Primitiva<Bobina> = {
     est.sumarA(extra, a, 1);
     est.sumarA(extra, b, -1);
   },
-  corriente: (_e, _v, valorExtra) => valorExtra,
+  corriente: (_e, ctx, extra) => ctx.valorExtra(extra),
 };

@@ -24,5 +24,5 @@ export const primitivaResistencia: Primitiva<Resistencia> = {
     est.sumarA(b, a, -g);
     est.sumarA(b, b, g);
   },
-  corriente: (e, v) => (v(e.a) - v(e.b)) / e.resistencia_ohm,
+  corriente: (e, ctx) => (ctx.voltaje(e.a) - ctx.voltaje(e.b)) / e.resistencia_ohm,
 };

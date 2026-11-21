@@ -11,6 +11,8 @@ export type CodigoError =
   | 'nodo_flotante'
   | 'bucle_fuentes_voltaje'
   | 'matriz_singular'
+  | 'no_converge'
+  | 'paso_muy_pequeno'
   | 'netlist';
 
 export interface DetalleError {

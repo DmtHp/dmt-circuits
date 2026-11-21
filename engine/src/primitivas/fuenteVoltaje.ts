@@ -20,14 +20,14 @@ export const primitivaFuenteVoltaje: Primitiva<FuenteVoltaje> = {
   terminales: (e) => [e.positivo, e.negativo],
   terminalesControl: () => [],
   validar: (e) => exigirFinito(e.voltaje_v, 'El voltaje'),
-  estampar(e, est, extra) {
+  estampar(e, est, ctx, extra) {
     const p = est.indiceNodo(e.positivo);
     const n = est.indiceNodo(e.negativo);
     est.sumarA(p, extra, 1);
     est.sumarA(n, extra, -1);
     est.sumarA(extra, p, 1);
     est.sumarA(extra, n, -1);
-    est.sumarZ(extra, e.voltaje_v);
+    est.sumarZ(extra, e.voltaje_v * ctx.factorFuentes);
   },
-  corriente: (_e, _v, valorExtra) => valorExtra,
+  corriente: (_e, ctx, extra) => ctx.valorExtra(extra),
 };

@@ -13,9 +13,10 @@ export const primitivaFuenteCorriente: Primitiva<FuenteCorriente> = {
   terminales: (e) => [e.desde, e.hacia],
   terminalesControl: () => [],
   validar: (e) => exigirFinito(e.corriente_a, 'La corriente'),
-  estampar(e, est) {
-    est.sumarZ(est.indiceNodo(e.desde), -e.corriente_a);
-    est.sumarZ(est.indiceNodo(e.hacia), e.corriente_a);
+  estampar(e, est, ctx) {
+    const i = e.corriente_a * ctx.factorFuentes;
+    est.sumarZ(est.indiceNodo(e.desde), -i);
+    est.sumarZ(est.indiceNodo(e.hacia), i);
   },
-  corriente: (e) => e.corriente_a,
+  corriente: (e, ctx) => e.corriente_a * ctx.factorFuentes,
 };

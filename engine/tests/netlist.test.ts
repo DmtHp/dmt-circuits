@@ -94,6 +94,24 @@ describe('leerNetlist', () => {
     expect(errorDe('R1 1 0 1k 2k').codigo).toBe('netlist');
   });
 
+  it('lee diodos y limitadores con parámetros CLAVE=valor', () => {
+    const { elementos } = leerNetlist('DZ 0 2 BV=5.1 is=1n\nA1 3 0 1 2 MIN=-12 MAX=12 GANANCIA=100k');
+    expect(elementos[0]).toEqual({
+      tipo: 'diodo',
+      nombre: 'DZ',
+      anodo: '0',
+      catodo: '2',
+      ruptura_v: 5.1,
+      corrienteSaturacion_a: 1e-9,
+    });
+    expect(elementos[1]).toMatchObject({ tipo: 'limitador', ganancia: 1e5, minimo_v: -12, maximo_v: 12 });
+  });
+
+  it('señala parámetros que faltan o que no existen', () => {
+    expect(errorDe('A1 3 0 1 2 MAX=12 GANANCIA=10').message).toContain('MIN');
+    expect(errorDe('D1 1 0 XX=3').message).toContain('XX=3');
+  });
+
   it('rechaza directivas que todavía no existen', () => {
     expect(errorDe('.tran 1m 10m').codigo).toBe('netlist');
   });

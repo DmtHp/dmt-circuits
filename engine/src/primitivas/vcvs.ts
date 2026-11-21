@@ -20,7 +20,7 @@ export const primitivaVCVS: Primitiva<FuenteVoltajeControlada> = {
   terminales: (e) => [e.positivo, e.negativo],
   terminalesControl: (e) => [e.controlPositivo, e.controlNegativo],
   validar: (e) => exigirFinito(e.ganancia, 'La ganancia'),
-  estampar(e, est, extra) {
+  estampar(e, est, _ctx, extra) {
     const p = est.indiceNodo(e.positivo);
     const n = est.indiceNodo(e.negativo);
     const cp = est.indiceNodo(e.controlPositivo);
@@ -32,5 +32,5 @@ export const primitivaVCVS: Primitiva<FuenteVoltajeControlada> = {
     est.sumarA(extra, cp, -e.ganancia);
     est.sumarA(extra, cn, e.ganancia);
   },
-  corriente: (_e, _v, valorExtra) => valorExtra,
+  corriente: (_e, ctx, extra) => ctx.valorExtra(extra),
 };

@@ -96,6 +96,46 @@ export interface Condensador extends ElementoBase {
   capacitancia_f: number;
 }
 
+/**
+ * Diodo de unión PN (modelo de Shockley):
+ *   I = Is · (e^(V / (n·Vt)) − 1),   con V = V(anodo) − V(catodo) y Vt ≈ 25.85 mV a 27 °C.
+ *
+ * Si se da `ruptura_v`, conduce también en inversa al acercarse a −ruptura_v
+ * (diodo zener): en V = −ruptura_v circula `corrienteRuptura_a` de cátodo a ánodo.
+ */
+export interface Diodo extends ElementoBase {
+  tipo: 'diodo';
+  anodo: Nodo;
+  catodo: Nodo;
+  /** Is, corriente de saturación. Por defecto 1e-14 A. */
+  corrienteSaturacion_a?: number;
+  /** n, coeficiente de emisión (entre 1 y 2 en diodos reales). Por defecto 1. */
+  coeficienteEmision?: number;
+  /** Voltaje de ruptura inversa (zener), positivo. Sin él, el diodo no rompe. */
+  ruptura_v?: number;
+  /** Corriente inversa en el voltaje de ruptura. Por defecto 1 mA. */
+  corrienteRuptura_a?: number;
+}
+
+/**
+ * Limitador suave: una fuente de voltaje controlada que copia
+ * ganancia · (V(controlPositivo) − V(controlNegativo)) mientras está lejos de
+ * los topes, y se curva suavemente hasta quedarse en `minimo_v` o `maximo_v`.
+ * Con ganancia grande es un op-amp que satura.
+ */
+export interface Limitador extends ElementoBase {
+  tipo: 'limitador';
+  positivo: Nodo;
+  negativo: Nodo;
+  controlPositivo: Nodo;
+  controlNegativo: Nodo;
+  ganancia: number;
+  minimo_v: number;
+  maximo_v: number;
+  /** Qué tan redondeada es la esquina, en voltios. Por defecto 1 % de (máximo − mínimo). */
+  suavidad_v?: number;
+}
+
 export type Elemento =
   | Resistencia
   | FuenteVoltaje
@@ -103,7 +143,9 @@ export type Elemento =
   | FuenteVoltajeControlada
   | FuenteCorrienteControlada
   | Bobina
-  | Condensador;
+  | Condensador
+  | Diodo
+  | Limitador;
 
 export type TipoElemento = Elemento['tipo'];
 

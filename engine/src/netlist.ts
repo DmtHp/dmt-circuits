@@ -10,6 +10,10 @@
  *   I<nombre> desde hacia [DC] valor fuente de corriente (A), circula de `desde` a `hacia` por dentro
  *   E<nombre> + − c+ c− ganancia     fuente de voltaje controlada por voltaje (VCVS)
  *   G<nombre> desde hacia c+ c− gm   fuente de corriente controlada por voltaje (VCCS, en S)
+ *   D<nombre> ánodo cátodo [IS=…] [N=…] [BV=…] [IBV=…]
+ *                                    diodo (BV: voltaje de ruptura, para zener)
+ *   A<nombre> + − c+ c− MIN=… MAX=… [GANANCIA=…] [SUAVIDAD=…]
+ *                                    limitador suave (ganancia 1 si no se indica)
  *
  * - El nodo "0" (o "gnd") es tierra.
  * - Líneas que empiezan con "*" son comentarios; lo que sigue a ";" en una línea también.
@@ -23,7 +27,7 @@
  * como la de SPICE, donde "1F" significa 1 femtofaradio.
  */
 
-import type { Circuito, Elemento } from './circuito';
+import type { Circuito, Diodo, Elemento, Limitador } from './circuito';
 import { ErrorCircuito } from './errores';
 
 const SUFIJOS: Record<string, number> = {
@@ -92,6 +96,28 @@ export function leerNetlist(texto: string): Circuito {
       if (partes.length === 5 && partes[3]!.toLowerCase() === 'dc') partes.splice(3, 1);
     };
 
+    /** Lee parámetros "CLAVE=valor" desde la posición `desde`. */
+    const parametros = (desde: number, permitidos: string[], obligatorios: string[] = []): Map<string, number> => {
+      const resultado = new Map<string, number>();
+      for (const crudo of partes.slice(desde)) {
+        const [clave, texto, sobra] = crudo.split('=');
+        const nombreClave = clave?.toUpperCase() ?? '';
+        if (texto === undefined || sobra !== undefined || !permitidos.includes(nombreClave)) {
+          fallar(`no entiendo "${crudo}". Se esperan parámetros CLAVE=valor con CLAVE entre ${permitidos.join(', ')}.`);
+        }
+        const v = leerValor(texto!);
+        if (v === null) fallar(`"${texto}" no es un valor válido para ${nombreClave}.`);
+        resultado.set(nombreClave, v!);
+      }
+      for (const clave of obligatorios) {
+        if (!resultado.has(clave)) fallar(`falta el parámetro ${clave}=….`);
+      }
+      return resultado;
+    };
+    const exigirMinimo = (cantidad: number, forma: string): void => {
+      if (partes.length < cantidad) fallar(`se esperaba "${forma}".`);
+    };
+
     switch (letra) {
       case 'R':
         exigirCampos(4, 'R<nombre> a b valor');
@@ -139,8 +165,37 @@ export function leerNetlist(texto: string): Circuito {
           transconductancia_s: valor(5, 'la transconductancia'),
         });
         break;
+      case 'D': {
+        exigirMinimo(3, 'D<nombre> ánodo cátodo [IS=…] [N=…] [BV=…] [IBV=…]');
+        const p = parametros(3, ['IS', 'N', 'BV', 'IBV']);
+        const diodo: Diodo = { tipo: 'diodo', nombre, anodo: partes[1]!, catodo: partes[2]! };
+        if (p.has('IS')) diodo.corrienteSaturacion_a = p.get('IS')!;
+        if (p.has('N')) diodo.coeficienteEmision = p.get('N')!;
+        if (p.has('BV')) diodo.ruptura_v = p.get('BV')!;
+        if (p.has('IBV')) diodo.corrienteRuptura_a = p.get('IBV')!;
+        elementos.push(diodo);
+        break;
+      }
+      case 'A': {
+        exigirMinimo(7, 'A<nombre> + − c+ c− MIN=… MAX=… [GANANCIA=…] [SUAVIDAD=…]');
+        const p = parametros(5, ['MIN', 'MAX', 'GANANCIA', 'SUAVIDAD'], ['MIN', 'MAX']);
+        const limitador: Limitador = {
+          tipo: 'limitador',
+          nombre,
+          positivo: partes[1]!,
+          negativo: partes[2]!,
+          controlPositivo: partes[3]!,
+          controlNegativo: partes[4]!,
+          ganancia: p.get('GANANCIA') ?? 1,
+          minimo_v: p.get('MIN')!,
+          maximo_v: p.get('MAX')!,
+        };
+        if (p.has('SUAVIDAD')) limitador.suavidad_v = p.get('SUAVIDAD')!;
+        elementos.push(limitador);
+        break;
+      }
       default:
-        fallar(`no conozco elementos que empiecen con "${nombre[0]}". Usa R, C, L, V, I, E o G.`);
+        fallar(`no conozco elementos que empiecen con "${nombre[0]}". Usa R, C, L, V, I, E, G, D o A.`);
     }
   }
 
