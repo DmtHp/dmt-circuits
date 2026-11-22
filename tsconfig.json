@@ -16,5 +16,5 @@
     "noEmit": true,
     "types": ["vite/client"]
   },
-  "include": ["engine", "components", "app/src", "vite.config.ts", "vitest.config.ts"]
+  "include": ["engine", "components", "app/src", "app/tests", "vite.config.ts", "vitest.config.ts"]
 }

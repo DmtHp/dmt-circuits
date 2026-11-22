@@ -2,7 +2,7 @@
 
 Simulador de circuitos electrónicos en el navegador, con motor de cálculo propio (análisis nodal modificado) y componentes que se pueden crear desde un archivo JSON, a mano o con ayuda de una IA. La descripción completa está en [docs/PROYECTO.md](docs/PROYECTO.md).
 
-**Estado:** Etapa 3 (formato de componentes). El motor resuelve DC y transitorio, y `components/` valida componentes en JSON con tres filtros (formato, reglas de la categoría y pruebas eléctricas contra el datasheet). El kit básico está en `components/biblioteca/`. Todavía no hay lienzo.
+**Estado:** Etapa 4 (interfaz). Ya se puede usar en el navegador: colocar componentes del kit, cablear, simular en tiempo real (el motor corre en un Web Worker), cambiar valores en vivo, ver el esquema o el encapsulado físico, medir con voltímetro, amperímetro y osciloscopio, y recibir avisos como "este LED se quemaría". Falta la Etapa 5: crear componentes con IA desde la app.
 
 ## Requisitos
 

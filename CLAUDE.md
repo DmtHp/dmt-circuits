@@ -67,7 +67,7 @@ Reglas de dependencia entre carpetas:
 ## Comandos
 
 - `npm run dev`: app en modo desarrollo.
-- `npm test`: pruebas (Vitest, solo `engine/tests` y `components/tests`, en Node).
+- `npm test`: pruebas (Vitest, en Node): `engine/tests`, `components/tests` y `app/tests` (solo la lógica pura de la interfaz, como la conectividad del lienzo).
 - `npm run lint`: ESLint. Hace cumplir el sentido de las dependencias y prohíbe `eval`/`new Function`.
 - `npm run typecheck`: revisión de tipos de TypeScript.
 - `npm run build`: web estática en `dist/` (rutas relativas, `base: './'`).

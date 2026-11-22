@@ -119,6 +119,7 @@ export const categoriaDiodo: DefinicionCategoria = {
         rs_ohm: { unidad: 'Ω', descripcion: 'Resistencia en serie', defecto: 0, minimo: 0, maximo: 1000 },
         bv_v: { unidad: 'V', descripcion: 'Voltaje de ruptura inversa (zener)', minimo: 0.1, maximo: 5000, opcional: true },
         ibv_a: { unidad: 'A', descripcion: 'Corriente en el voltaje de ruptura', defecto: 1e-3, minimo: 1e-9, maximo: 10 },
+        corriente_maxima_a: { unidad: 'A', descripcion: 'Corriente máxima permitida (para avisos; no cambia el modelo)', minimo: 1e-6, maximo: 1000, opcional: true },
       },
       construir(p, [a, k], v) {
         const diodo: Diodo = {

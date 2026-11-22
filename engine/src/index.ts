@@ -8,4 +8,4 @@ export { ErrorMatrizSingular, MatrizDensa, type Factorizacion, type Matriz } fro
 export { MatrizDispersa } from './matrizDispersa';
 export { leerNetlist, leerValor } from './netlist';
 export { evaluarForma } from './formasDeOnda';
-export { analizarTransitorio, type OpcionesTransitorio, type ResultadoTransitorio, type SerieElemento } from './transitorio';
+export { analizarTransitorio, SesionTransitorio, type OpcionesSesion, type OpcionesTransitorio, type ResultadoTransitorio, type SerieElemento } from './transitorio';

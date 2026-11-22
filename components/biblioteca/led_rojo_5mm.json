@@ -29,7 +29,8 @@
         "parametros": {
           "is_a": 2.25e-18,
           "n": 2,
-          "rs_ohm": 5
+          "rs_ohm": 5,
+          "corriente_maxima_a": 0.03
         }
       }
     ]

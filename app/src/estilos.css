@@ -1,33 +1,569 @@
 :root {
-  font-family: system-ui, sans-serif;
-  color: #1d2433;
-  background: #f6f7f9;
+  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  font-size: 14px;
+  --fondo: #f6f7f9;
+  --panel: #ffffff;
+  --borde: #d9dde4;
+  --tinta: #1d2433;
+  --tinta-suave: #5b6475;
+  --rejilla: #c7ccd6;
+  --cable: #1f6feb;
+  --acento: #1f6feb;
+  --peligro: #d32f2f;
+  --atencion: #ed8b00;
+  --canal1: #e0a800;
+  --canal2: #1aa3c9;
+  --pantalla: #0f1a14;
+  color: var(--tinta);
+  background: var(--fondo);
 }
 @media (prefers-color-scheme: dark) {
   :root {
-    color: #e6e8ec;
-    background: #15181e;
+    --fondo: #15181e;
+    --panel: #1d2129;
+    --borde: #343a46;
+    --tinta: #e6e8ec;
+    --tinta-suave: #9aa3b2;
+    --rejilla: #3a414e;
+    --cable: #5ea0ff;
+    --acento: #5ea0ff;
   }
+}
+* {
+  box-sizing: border-box;
 }
 body {
   margin: 0;
 }
-main {
-  max-width: 40rem;
-  margin: 0 auto;
-  padding: 2rem 1rem;
+button,
+select,
+input {
+  font: inherit;
+  color: inherit;
 }
-label {
+button,
+select {
+  background: var(--panel);
+  border: 1px solid var(--borde);
+  border-radius: 6px;
+  padding: 0.3rem 0.6rem;
+  cursor: pointer;
+}
+button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+button.activo,
+button.elegida {
+  border-color: var(--acento);
+  color: var(--acento);
+  font-weight: 600;
+}
+
+.aplicacion {
+  display: grid;
+  grid-template-columns: 200px 1fr 330px;
+  grid-template-rows: auto 1fr;
+  height: 100vh;
+}
+
+.barra {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: nowrap;
+  overflow: hidden;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid var(--borde);
+  background: var(--panel);
+}
+.barra h1 {
+  white-space: nowrap;
+  font-size: 1.05rem;
+  margin: 0 0.5rem 0 0;
+}
+.barra .grupo {
+  display: flex;
+  flex-shrink: 0;
+  gap: 0.3rem;
+}
+.barra .principal {
+  background: var(--acento);
+  color: white;
+  border-color: var(--acento);
+  font-weight: 600;
+}
+.barra .principal.detener {
+  background: var(--peligro);
+  border-color: var(--peligro);
+}
+.estado {
+  margin-left: auto;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--tinta-suave);
+  font-variant-numeric: tabular-nums;
+}
+.atrasado {
+  color: var(--atencion);
+}
+
+.paleta {
+  overflow-y: auto;
+  border-right: 1px solid var(--borde);
+  background: var(--panel);
+  padding: 0.5rem;
+}
+.paleta h2 {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--tinta-suave);
+  margin: 0.75rem 0 0.3rem;
+}
+.paleta button {
+  display: block;
+  width: 100%;
+  text-align: left;
+  margin-bottom: 0.25rem;
+  font-size: 0.85rem;
+}
+
+.zona-lienzo {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.lienzo {
+  flex: 1;
+  width: 100%;
+  height: 100%;
+  outline: none;
+  user-select: none;
+}
+.lienzo.colocando,
+.lienzo.cableando {
+  cursor: crosshair;
+}
+.punto-rejilla {
+  fill: var(--rejilla);
+}
+.banda-error {
+  position: absolute;
+  top: 0.5rem;
+  left: 0.5rem;
+  right: 0.5rem;
+  background: var(--peligro);
+  color: white;
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+  z-index: 2;
+}
+.ayuda {
+  position: absolute;
+  bottom: 2.2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--panel);
+  border: 1px solid var(--borde);
+  border-radius: 6px;
+  padding: 0.4rem 0.75rem;
+  color: var(--tinta-suave);
+  z-index: 2;
+  pointer-events: none;
+}
+.atajos {
+  margin: 0;
+  padding: 0.3rem 0.75rem;
+  font-size: 0.75rem;
+  color: var(--tinta-suave);
+  border-top: 1px solid var(--borde);
+  background: var(--panel);
+}
+
+/* Dibujos */
+.trazo {
+  stroke: var(--tinta);
+  stroke-width: 2;
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.trazo.grueso {
+  stroke-width: 3;
+}
+.trazo.fino {
+  stroke-width: 1.3;
+}
+.relleno-fondo {
+  fill: var(--panel);
+}
+.relleno-tinta {
+  fill: var(--tinta);
+}
+.relleno-instrumento {
+  fill: var(--panel);
+}
+.signo {
+  font-size: 14px;
+  text-anchor: middle;
+  fill: var(--tinta);
+  font-weight: 700;
+}
+.signo.pequeno {
+  font-size: 11px;
+}
+.letra-instrumento {
+  font-size: 18px;
+  font-weight: 700;
+  text-anchor: middle;
+  fill: var(--tinta);
+}
+.numero-pin {
+  font-size: 9px;
+  fill: var(--tinta-suave);
+}
+.nombre-pin {
+  font-size: 9px;
+  fill: var(--tinta);
+}
+.derecha {
+  text-anchor: end;
+}
+.izquierda {
+  text-anchor: start;
+}
+.centro {
+  text-anchor: middle;
+}
+.texto-ic {
+  font-size: 11px;
+  fill: #e6e6e6;
+  text-anchor: middle;
+  font-family: ui-monospace, monospace;
+  letter-spacing: 0.05em;
+}
+.cuerpo-ic {
+  fill: #23262b;
+}
+.muesca {
+  fill: #3c4047;
+}
+.pin-metal {
+  fill: #b9bec7;
+}
+.pata {
+  stroke: #9aa0a8;
+  stroke-width: 2.5;
+  stroke-linecap: round;
+}
+.cuerpo-resistencia {
+  fill: #e5cf9f;
+  stroke: #b39c6c;
+}
+.cuerpo-ceramico {
+  fill: #e8a54b;
+  stroke: #b97a26;
+}
+.cuerpo-electrolitico {
+  fill: #2b4c9b;
+  stroke: #1a2f63;
+}
+.franja-electrolitico {
+  fill: #c7d2ef;
+}
+.cuerpo-bobina {
+  fill: #2f5d3a;
+  stroke: #1d3a24;
+}
+.cuerpo-vidrio {
+  fill: #f0a35e;
+  opacity: 0.85;
+  stroke: #c47a33;
+}
+.banda-negra {
+  fill: #1b1b1b;
+}
+.cuerpo-do41 {
+  fill: #222;
+}
+.banda-plateada {
+  fill: #c8ccd2;
+}
+.cuerpo-led {
+  fill: #d81f26;
+  stroke: #8f1116;
+}
+.brillo-led {
+  fill: #ff3b30;
+  filter: blur(4px);
+}
+.cuerpo-trimmer {
+  fill: #2563c9;
+  stroke: #173f80;
+}
+.tornillo {
+  fill: #f1f1f1;
+  stroke: #9aa0a8;
+}
+.ranura {
+  stroke: #6a7079;
+  stroke-width: 2;
+}
+.boton {
+  fill: #55595f;
+}
+.boton.presionado {
+  fill: #2e9b4e;
+}
+.sonda {
+  stroke-width: 1.5;
+}
+.sonda.canal1 {
+  fill: var(--canal1);
+  stroke: var(--canal1);
+}
+.sonda.canal2 {
+  fill: var(--canal2);
+  stroke: var(--canal2);
+}
+.texto-sonda {
+  font-size: 11px;
+  font-weight: 700;
+  fill: #111;
+  text-anchor: middle;
+}
+
+.caja-pieza {
+  fill: transparent;
+  stroke: transparent;
+  rx: 4;
+  cursor: move;
+}
+.pieza.seleccionada .caja-pieza {
+  stroke: var(--acento);
+  stroke-dasharray: 4 3;
+}
+.pieza.marca-peligro .caja-pieza {
+  fill: rgba(211, 47, 47, 0.12);
+  stroke: var(--peligro);
+}
+.pieza.marca-atencion .caja-pieza {
+  fill: rgba(237, 139, 0, 0.1);
+  stroke: var(--atencion);
+}
+.pin {
+  fill: transparent;
+  stroke: transparent;
+  cursor: crosshair;
+}
+.pin:hover {
+  fill: var(--acento);
+  stroke: var(--panel);
+}
+.etiqueta {
+  font-size: 11px;
+  fill: var(--tinta);
+}
+.etiqueta .lectura {
+  font-weight: 700;
+  font-size: 13px;
+  fill: var(--acento);
+  font-variant-numeric: tabular-nums;
+}
+.cable-linea {
+  stroke: var(--cable);
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+.cable-toque {
+  stroke: transparent;
+  stroke-width: 10;
+}
+.cable.seleccionado .cable-linea {
+  stroke-width: 4;
+}
+.union {
+  fill: var(--cable);
+}
+.cable-previa {
+  fill: none;
+  stroke: var(--cable);
+  stroke-width: 2;
+  stroke-dasharray: 5 4;
+}
+.cursor-rejilla {
+  fill: none;
+  stroke: var(--tinta-suave);
+  pointer-events: none;
+}
+.cursor-rejilla.sobre-pin {
+  stroke: var(--acento);
+  stroke-width: 2;
+}
+.fantasma {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+/* Panel lateral */
+.lateral {
+  border-left: 1px solid var(--borde);
+  background: var(--panel);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+.propiedades {
+  padding: 0.75rem;
+  border-bottom: 1px solid var(--borde);
+}
+.propiedades h2 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+.propiedades .subtitulo {
+  margin: 0.1rem 0 0.75rem;
+  color: var(--tinta-suave);
+  font-size: 0.85rem;
+}
+.propiedades label {
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
-  margin: 0.75rem 0;
+  margin-bottom: 0.6rem;
 }
-input {
-  font: inherit;
-  padding: 0.4rem;
-  max-width: 12rem;
+.propiedades label.fila {
+  flex-direction: row;
+  align-items: center;
 }
-.resultado {
-  font-size: 1.2rem;
+.campo-con-unidad {
+  display: flex;
+  gap: 0.3rem;
+  align-items: center;
+}
+.campo-con-unidad input {
+  width: 8rem;
+  padding: 0.3rem;
+  border: 1px solid var(--borde);
+  border-radius: 6px;
+  background: var(--fondo);
+}
+input[aria-invalid='true'] {
+  border-color: var(--peligro);
+}
+.error-campo {
+  color: var(--peligro);
+}
+.lecturas {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.2rem 0.75rem;
+  margin: 0.5rem 0;
+  font-variant-numeric: tabular-nums;
+}
+.lecturas dt {
+  color: var(--tinta-suave);
+}
+.lecturas dd {
+  margin: 0;
+  font-weight: 600;
+}
+.aviso {
+  border-left: 3px solid;
+  padding: 0.3rem 0.5rem;
+  margin: 0.4rem 0;
+  border-radius: 3px;
+}
+.aviso.peligro {
+  border-color: var(--peligro);
+  background: rgba(211, 47, 47, 0.08);
+}
+.aviso.atencion {
+  border-color: var(--atencion);
+  background: rgba(237, 139, 0, 0.08);
+}
+.botones {
+  display: flex;
+  gap: 0.4rem;
+  margin-top: 0.5rem;
+}
+.vacia {
+  color: var(--tinta-suave);
+}
+
+.osciloscopio {
+  padding: 0.75rem;
+}
+.pantalla-osciloscopio {
+  width: 100%;
+  background: var(--pantalla);
+  border-radius: 6px;
+}
+.reticula {
+  stroke: #26402f;
+  stroke-width: 1;
+}
+.reticula.eje {
+  stroke: #3d6a4c;
+}
+.traza {
+  fill: none;
+  stroke-width: 2;
+}
+.traza.canal1 {
+  stroke: var(--canal1);
+}
+.traza.canal2 {
+  stroke: var(--canal2);
+}
+.controles-osciloscopio {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+  font-size: 0.8rem;
+}
+.controles-osciloscopio label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+.controles-osciloscopio .canal1 {
+  color: var(--canal1);
+}
+.controles-osciloscopio .canal2 {
+  color: var(--canal2);
+}
+.valor-canal {
+  font-variant-numeric: tabular-nums;
+  color: var(--tinta);
+}
+
+@media (max-width: 900px) {
+  .aplicacion {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto 60vh auto;
+    height: auto;
+  }
+  .paleta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+    border-right: none;
+    border-bottom: 1px solid var(--borde);
+  }
+  .paleta section {
+    display: contents;
+  }
+  .paleta h2 {
+    display: none;
+  }
+  .paleta button {
+    width: auto;
+  }
 }

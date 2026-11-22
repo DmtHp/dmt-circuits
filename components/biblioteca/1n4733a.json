@@ -32,7 +32,8 @@
           "n": 1,
           "rs_ohm": 2,
           "bv_v": 5.0,
-          "ibv_a": 0.049
+          "ibv_a": 0.049,
+          "corriente_maxima_a": 0.178
         }
       }
     ]
