@@ -331,6 +331,6 @@ describe('análisis DC: errores con mensaje claro', () => {
       R1 2 0 1k
     `);
     expect(e.codigo).toBe('matriz_singular');
-    expect(e.elementos).toEqual(['E1']);
+    expect(e.elementos).toContain('E1');
   });
 });

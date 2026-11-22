@@ -38,6 +38,8 @@ export interface Sistema {
   /** Nodos en el orden de sus incógnitas (sin tierra). */
   ordenNodos: Nodo[];
   indices: Map<Nodo, number>;
+  /** Memoria de nombres tal como los escriben los elementos ("GND", " 2") → índice, para no normalizar en cada estampa. */
+  indicesCrudos: Map<string, number>;
   /** Cantidad total de incógnitas. */
   n: number;
   /** true si algún elemento es no lineal y hay que iterar. */
@@ -93,7 +95,14 @@ export function prepararSistema(circuito: Circuito, modoTopologia: Modo): Sistem
   for (const p of preparados) {
     if (p.primitiva.variablesExtra === 1) p.extra = n++;
   }
-  return { preparados, ordenNodos, indices, n, noLineal: preparados.some((p) => p.primitiva.noLineal === true) };
+  return {
+    preparados,
+    ordenNodos,
+    indices,
+    indicesCrudos: new Map(),
+    n,
+    noLineal: preparados.some((p) => p.primitiva.noLineal === true),
+  };
 }
 
 /** Vuelve cada elemento a su estado inicial (por ejemplo, antes de un plan B). */
@@ -102,10 +111,12 @@ export function reiniciarEstados(sistema: Sistema): void {
 }
 
 export function indiceDeNodo(sistema: Sistema, nodo: Nodo): number {
+  const conocido = sistema.indicesCrudos.get(nodo);
+  if (conocido !== undefined) return conocido;
   const k = normalizarNodo(nodo);
-  if (k === TIERRA) return -1;
-  const i = sistema.indices.get(k);
+  const i = k === TIERRA ? -1 : sistema.indices.get(k);
   if (i === undefined) throw new Error(`Error interno: el nodo "${k}" no fue numerado.`);
+  sistema.indicesCrudos.set(nodo, i);
   return i;
 }
 

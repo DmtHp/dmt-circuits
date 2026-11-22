@@ -13,7 +13,8 @@
  */
 
 import { ErrorCircuito } from './errores';
-import { ErrorMatrizSingular, MatrizDensa, type Factorizacion } from './matriz';
+import { ErrorMatrizSingular, type Factorizacion, type Matriz } from './matriz';
+import { MatrizDispersa } from './matrizDispersa';
 import {
   crearContexto,
   describirIncognita,
@@ -62,10 +63,12 @@ export interface CacheFactorizacion {
   factorizacion: Factorizacion | null;
   /** Cuántas veces se factorizó (para medir el rendimiento). */
   factorizaciones: number;
+  /** La matriz se reutiliza entre llamadas: así también se reutiliza su orden de pivotes. */
+  matriz: MatrizDispersa | null;
 }
 
 export function crearCache(): CacheFactorizacion {
-  return { clave: '', factorizacion: null, factorizaciones: 0 };
+  return { clave: '', factorizacion: null, factorizaciones: 0, matriz: null };
 }
 
 export function resolverNewton(
@@ -76,7 +79,8 @@ export function resolverNewton(
   cache: CacheFactorizacion = crearCache(),
 ): ResultadoNewton {
   const { n } = sistema;
-  const matriz = new MatrizDensa(n);
+  if (!cache.matriz || cache.matriz.n !== n) cache.matriz = new MatrizDispersa(n);
+  const matriz = cache.matriz;
   const z = new Float64Array(n);
   let x: Float64Array = Float64Array.from(xInicial);
   const nNodos = sistema.ordenNodos.length;
@@ -148,7 +152,7 @@ function incognitasNoLineales(sistema: Sistema): Set<number> {
   return resultado;
 }
 
-function factorizar(sistema: Sistema, matriz: MatrizDensa): Factorizacion {
+function factorizar(sistema: Sistema, matriz: Matriz): Factorizacion {
   try {
     return matriz.factorizar();
   } catch (error) {
