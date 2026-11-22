@@ -1,0 +1,46 @@
+{
+  "formato": "1.0",
+  "categoria": "diodo",
+  "id": "led_rojo_5mm",
+  "nombre": "LED rojo de 5 mm",
+  "encapsulado": "LED-5mm",
+  "fidelidad": "comportamiento",
+  "pines": [
+    {
+      "n": 1,
+      "nombre": "A",
+      "funcion": "ánodo (pata larga)"
+    },
+    {
+      "n": 2,
+      "nombre": "K",
+      "funcion": "cátodo (pata corta, lado plano)"
+    }
+  ],
+  "modelo": {
+    "tipo": "subcircuito",
+    "bloques": [
+      {
+        "usa": "diodo_basico",
+        "pines": [
+          "A",
+          "K"
+        ],
+        "parametros": {
+          "is_a": 2.25e-18,
+          "n": 2,
+          "rs_ohm": 5
+        }
+      }
+    ]
+  },
+  "pruebas": [
+    {
+      "tipo": "voltaje_directo",
+      "corriente_a": 0.02,
+      "minimo_v": 1.8,
+      "maximo_v": 2.5,
+      "fuente": "Hoja de datos típica de LED rojo de 5 mm (por ejemplo Kingbright L-53HD): VF típ 2.0 V, máx 2.5 V a IF = 20 mA"
+    }
+  ]
+}

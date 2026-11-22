@@ -1,0 +1,123 @@
+{
+  "formato": "1.0",
+  "categoria": "compuerta_logica",
+  "id": "74hc00",
+  "nombre": "74HC00 - Cuatro compuertas NAND de 2 entradas",
+  "fabricante": "Texas Instruments y otros",
+  "encapsulado": "DIP-14",
+  "fidelidad": "comportamiento",
+  "pines": [
+    {
+      "n": 1,
+      "nombre": "1A"
+    },
+    {
+      "n": 2,
+      "nombre": "1B"
+    },
+    {
+      "n": 3,
+      "nombre": "1Y"
+    },
+    {
+      "n": 4,
+      "nombre": "2A"
+    },
+    {
+      "n": 5,
+      "nombre": "2B"
+    },
+    {
+      "n": 6,
+      "nombre": "2Y"
+    },
+    {
+      "n": 7,
+      "nombre": "GND"
+    },
+    {
+      "n": 8,
+      "nombre": "3Y"
+    },
+    {
+      "n": 9,
+      "nombre": "3A"
+    },
+    {
+      "n": 10,
+      "nombre": "3B"
+    },
+    {
+      "n": 11,
+      "nombre": "4Y"
+    },
+    {
+      "n": 12,
+      "nombre": "4A"
+    },
+    {
+      "n": 13,
+      "nombre": "4B"
+    },
+    {
+      "n": 14,
+      "nombre": "VCC"
+    }
+  ],
+  "modelo": {
+    "tipo": "logico",
+    "familia": "CMOS",
+    "vcc_v": 4.5,
+    "vil_v": 1.35,
+    "vih_v": 3.15,
+    "vol_v": 0.1,
+    "voh_v": 4.4,
+    "retardo_ns": 9,
+    "unidades": [
+      {
+        "entradas": [
+          "1A",
+          "1B"
+        ],
+        "salida": "1Y",
+        "funcion": "NAND"
+      },
+      {
+        "entradas": [
+          "2A",
+          "2B"
+        ],
+        "salida": "2Y",
+        "funcion": "NAND"
+      },
+      {
+        "entradas": [
+          "3A",
+          "3B"
+        ],
+        "salida": "3Y",
+        "funcion": "NAND"
+      },
+      {
+        "entradas": [
+          "4A",
+          "4B"
+        ],
+        "salida": "4Y",
+        "funcion": "NAND"
+      }
+    ]
+  },
+  "pruebas": [
+    {
+      "tipo": "tabla_de_verdad",
+      "filas": [
+        "00:1",
+        "01:1",
+        "10:1",
+        "11:0"
+      ],
+      "fuente": "Datasheet TI SN74HC00: tabla de funciones; niveles VIH/VIL/VOH/VOL a VCC = 4.5 V"
+    }
+  ]
+}

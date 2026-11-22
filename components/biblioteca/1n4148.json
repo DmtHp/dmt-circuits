@@ -1,0 +1,52 @@
+{
+  "formato": "1.0",
+  "categoria": "diodo",
+  "id": "1n4148",
+  "nombre": "1N4148 - Diodo de señal rápido",
+  "fabricante": "Vishay / onsemi",
+  "encapsulado": "DO-35",
+  "fidelidad": "comportamiento",
+  "pines": [
+    {
+      "n": 1,
+      "nombre": "A",
+      "funcion": "ánodo"
+    },
+    {
+      "n": 2,
+      "nombre": "K",
+      "funcion": "cátodo (franja)"
+    }
+  ],
+  "modelo": {
+    "tipo": "subcircuito",
+    "bloques": [
+      {
+        "usa": "diodo_basico",
+        "pines": [
+          "A",
+          "K"
+        ],
+        "parametros": {
+          "is_a": 2.52e-09,
+          "n": 1.752,
+          "rs_ohm": 0.568
+        }
+      }
+    ]
+  },
+  "pruebas": [
+    {
+      "tipo": "voltaje_directo",
+      "corriente_a": 0.01,
+      "maximo_v": 1.0,
+      "fuente": "Datasheet 1N4148 (Vishay), características eléctricas: VF máx 1 V a IF = 10 mA"
+    },
+    {
+      "tipo": "corriente_inversa",
+      "voltaje_v": 20,
+      "maximo_a": 2.5e-08,
+      "fuente": "Datasheet 1N4148 (Vishay), características eléctricas: IR máx 25 nA a VR = 20 V"
+    }
+  ]
+}

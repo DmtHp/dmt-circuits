@@ -1,0 +1,120 @@
+{
+  "formato": "1.0",
+  "categoria": "amplificador_operacional",
+  "id": "lm741",
+  "nombre": "LM741 - Amplificador operacional de propósito general",
+  "fabricante": "Texas Instruments y otros",
+  "encapsulado": "DIP-8",
+  "fidelidad": "comportamiento",
+  "pines": [
+    {
+      "n": 1,
+      "nombre": "NULL1",
+      "funcion": "ajuste de offset"
+    },
+    {
+      "n": 2,
+      "nombre": "IN-",
+      "funcion": "entrada inversora"
+    },
+    {
+      "n": 3,
+      "nombre": "IN+",
+      "funcion": "entrada no inversora"
+    },
+    {
+      "n": 4,
+      "nombre": "V-",
+      "funcion": "alimentación negativa"
+    },
+    {
+      "n": 5,
+      "nombre": "NULL2",
+      "funcion": "ajuste de offset"
+    },
+    {
+      "n": 6,
+      "nombre": "OUT",
+      "funcion": "salida"
+    },
+    {
+      "n": 7,
+      "nombre": "V+",
+      "funcion": "alimentación positiva"
+    },
+    {
+      "n": 8,
+      "nombre": "NC",
+      "funcion": "sin conexión"
+    }
+  ],
+  "modelo": {
+    "tipo": "subcircuito",
+    "bloques": [
+      {
+        "usa": "opamp_basico",
+        "pines": [
+          "IN+",
+          "IN-",
+          "OUT",
+          "V+",
+          "V-"
+        ],
+        "parametros": {
+          "ganancia": 200000,
+          "gbw_hz": "1meg",
+          "slew_v_us": 0.5,
+          "margen_salida_alto_v": 1,
+          "margen_salida_bajo_v": 1,
+          "resistencia_entrada_ohm": "2meg",
+          "resistencia_salida_ohm": 75,
+          "alimentacion_maxima_v": 44
+        }
+      }
+    ]
+  },
+  "pruebas": [
+    {
+      "tipo": "seguidor_de_voltaje",
+      "alimentacion_v": 15,
+      "alimentacion_negativa_v": -15,
+      "entrada_v": 5,
+      "tolerancia_v": 0.005,
+      "fuente": "Datasheet TI LM741 (SNOSC25), características eléctricas con ±15 V a 25 °C: AVD 200 V/mV típ"
+    },
+    {
+      "tipo": "saturacion_salida",
+      "alimentacion_v": 15,
+      "alimentacion_negativa_v": -15,
+      "lado": "alto",
+      "esperado_v": "VCC - 1",
+      "tolerancia_v": 0.3,
+      "fuente": "Datasheet TI LM741 (SNOSC25), características eléctricas con ±15 V a 25 °C: excursión de salida ±14 V típ con RL ≥ 10 kΩ"
+    },
+    {
+      "tipo": "saturacion_salida",
+      "alimentacion_v": 15,
+      "alimentacion_negativa_v": -15,
+      "lado": "bajo",
+      "esperado_v": "VEE + 1",
+      "tolerancia_v": 0.3,
+      "fuente": "Datasheet TI LM741 (SNOSC25), características eléctricas con ±15 V a 25 °C: excursión de salida ±14 V típ con RL ≥ 10 kΩ"
+    },
+    {
+      "tipo": "slew_rate",
+      "alimentacion_v": 15,
+      "alimentacion_negativa_v": -15,
+      "tipico_v_us": 0.5,
+      "tolerancia_pct": 20,
+      "fuente": "Datasheet TI LM741 (SNOSC25), características eléctricas con ±15 V a 25 °C: SR 0.5 V/µs típ"
+    },
+    {
+      "tipo": "ancho_de_banda",
+      "alimentacion_v": 15,
+      "alimentacion_negativa_v": -15,
+      "gbw_hz": "1meg",
+      "tolerancia_pct": 25,
+      "fuente": "Datasheet TI LM741 (SNOSC25), características eléctricas con ±15 V a 25 °C: ancho de banda de ganancia unitaria 1 MHz típ"
+    }
+  ]
+}

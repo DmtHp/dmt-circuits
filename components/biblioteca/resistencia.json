@@ -1,0 +1,46 @@
+{
+  "formato": "1.0",
+  "categoria": "pasivo",
+  "id": "resistencia",
+  "nombre": "Resistencia",
+  "descripcion": "Resistencia de película. El valor se cambia en cada instancia.",
+  "encapsulado": "axial",
+  "fidelidad": "ideal",
+  "pines": [
+    {
+      "n": 1,
+      "nombre": "A"
+    },
+    {
+      "n": 2,
+      "nombre": "B"
+    }
+  ],
+  "modelo": {
+    "tipo": "subcircuito",
+    "bloques": [
+      {
+        "usa": "resistencia",
+        "pines": [
+          "A",
+          "B"
+        ],
+        "parametros": {
+          "resistencia_ohm": "1k",
+          "potencia_w": 0.25
+        }
+      }
+    ]
+  },
+  "pruebas": [
+    {
+      "tipo": "resistencia_entre_pines",
+      "pines": [
+        "A",
+        "B"
+      ],
+      "esperado_ohm": "1k",
+      "tolerancia_pct": 0.1
+    }
+  ]
+}

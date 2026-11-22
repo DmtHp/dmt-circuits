@@ -1,0 +1,52 @@
+{
+  "formato": "1.0",
+  "categoria": "diodo",
+  "id": "1n4007",
+  "nombre": "1N4007 - Diodo rectificador 1 A, 1000 V",
+  "fabricante": "onsemi / Vishay",
+  "encapsulado": "DO-41",
+  "fidelidad": "comportamiento",
+  "pines": [
+    {
+      "n": 1,
+      "nombre": "A",
+      "funcion": "ánodo"
+    },
+    {
+      "n": 2,
+      "nombre": "K",
+      "funcion": "cátodo (franja)"
+    }
+  ],
+  "modelo": {
+    "tipo": "subcircuito",
+    "bloques": [
+      {
+        "usa": "diodo_basico",
+        "pines": [
+          "A",
+          "K"
+        ],
+        "parametros": {
+          "is_a": 7.03e-09,
+          "n": 1.8,
+          "rs_ohm": 0.034
+        }
+      }
+    ]
+  },
+  "pruebas": [
+    {
+      "tipo": "voltaje_directo",
+      "corriente_a": 1,
+      "maximo_v": 1.1,
+      "fuente": "Datasheet 1N4001-1N4007, características eléctricas: VF máx 1.1 V a IF = 1 A"
+    },
+    {
+      "tipo": "corriente_inversa",
+      "voltaje_v": 1000,
+      "maximo_a": 5e-06,
+      "fuente": "Datasheet 1N4001-1N4007: IR máx 5 µA al voltaje inverso nominal, 25 °C"
+    }
+  ]
+}

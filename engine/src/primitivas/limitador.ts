@@ -124,9 +124,16 @@ export const primitivaLimitador: Primitiva<Limitador, EstadoLimitador> = {
     const bordeAlto = maximo + MARGEN_SATURACION * s;
     const bordeBajo = minimo - MARGEN_SATURACION * s;
     const uNuevo = e.ganancia * (ctx.voltaje(e.controlPositivo) - ctx.voltaje(e.controlNegativo));
+    // Al entrar en saturación se para en el borde. Si salta de una saturación a la contraria
+    // (el vaivén típico de un lazo con mucha ganancia), se para del lado lineal, cerca del tope
+    // que dejó: ahí la pendiente vale 1 y Newton-Raphson resuelve el lazo como si fuera lineal.
+    const medio = (maximo + minimo) / 2;
     let u = uNuevo;
-    if (uNuevo >= bordeAlto && estado.u < bordeAlto) u = bordeAlto;
-    else if (uNuevo <= bordeBajo && estado.u > bordeBajo) u = bordeBajo;
+    if (uNuevo >= bordeAlto && estado.u < bordeAlto) {
+      u = estado.u <= bordeBajo ? Math.min(medio, minimo + MARGEN_SATURACION * s) : bordeAlto;
+    } else if (uNuevo <= bordeBajo && estado.u > bordeBajo) {
+      u = estado.u >= bordeAlto ? Math.max(medio, maximo - MARGEN_SATURACION * s) : bordeBajo;
+    }
     if (u !== uNuevo) ctx.avisarLimitado();
     estado.u = u;
 

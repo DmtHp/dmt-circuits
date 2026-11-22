@@ -1,0 +1,45 @@
+{
+  "formato": "1.0",
+  "categoria": "pasivo",
+  "id": "bobina",
+  "nombre": "Bobina",
+  "descripcion": "Inductor. El valor se cambia en cada instancia.",
+  "encapsulado": "radial",
+  "fidelidad": "ideal",
+  "pines": [
+    {
+      "n": 1,
+      "nombre": "A"
+    },
+    {
+      "n": 2,
+      "nombre": "B"
+    }
+  ],
+  "modelo": {
+    "tipo": "subcircuito",
+    "bloques": [
+      {
+        "usa": "bobina",
+        "pines": [
+          "A",
+          "B"
+        ],
+        "parametros": {
+          "inductancia_h": "10m"
+        }
+      }
+    ]
+  },
+  "pruebas": [
+    {
+      "tipo": "inductancia_entre_pines",
+      "pines": [
+        "A",
+        "B"
+      ],
+      "esperado_h": "10m",
+      "tolerancia_pct": 1
+    }
+  ]
+}

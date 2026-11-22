@@ -1,0 +1,63 @@
+{
+  "formato": "1.0",
+  "categoria": "pasivo",
+  "id": "potenciometro",
+  "nombre": "Potenciómetro",
+  "descripcion": "Potenciómetro lineal. A y B son los extremos; W es el cursor.",
+  "encapsulado": "SIP-3",
+  "fidelidad": "ideal",
+  "pines": [
+    {
+      "n": 1,
+      "nombre": "A",
+      "funcion": "extremo"
+    },
+    {
+      "n": 2,
+      "nombre": "W",
+      "funcion": "cursor"
+    },
+    {
+      "n": 3,
+      "nombre": "B",
+      "funcion": "extremo"
+    }
+  ],
+  "modelo": {
+    "tipo": "subcircuito",
+    "bloques": [
+      {
+        "usa": "potenciometro",
+        "pines": [
+          "A",
+          "W",
+          "B"
+        ],
+        "parametros": {
+          "resistencia_ohm": "10k",
+          "posicion": 0.5
+        }
+      }
+    ]
+  },
+  "pruebas": [
+    {
+      "tipo": "resistencia_entre_pines",
+      "pines": [
+        "A",
+        "B"
+      ],
+      "esperado_ohm": "10k",
+      "tolerancia_pct": 0.1
+    },
+    {
+      "tipo": "resistencia_entre_pines",
+      "pines": [
+        "A",
+        "W"
+      ],
+      "esperado_ohm": "5k",
+      "tolerancia_pct": 0.1
+    }
+  ]
+}

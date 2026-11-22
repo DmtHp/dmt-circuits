@@ -1,0 +1,85 @@
+{
+  "formato": "1.0",
+  "categoria": "amplificador_operacional",
+  "id": "opamp_generico",
+  "nombre": "Amplificador operacional genérico",
+  "descripcion": "Op-amp casi ideal para aprender: salida de riel a riel, ganancia 100 000, GBW 1 MHz.",
+  "encapsulado": "DIP-8",
+  "fidelidad": "ideal",
+  "pines": [
+    {
+      "n": 1,
+      "nombre": "NC1"
+    },
+    {
+      "n": 2,
+      "nombre": "IN-",
+      "funcion": "entrada inversora"
+    },
+    {
+      "n": 3,
+      "nombre": "IN+",
+      "funcion": "entrada no inversora"
+    },
+    {
+      "n": 4,
+      "nombre": "V-",
+      "funcion": "alimentación negativa"
+    },
+    {
+      "n": 5,
+      "nombre": "NC2"
+    },
+    {
+      "n": 6,
+      "nombre": "OUT",
+      "funcion": "salida"
+    },
+    {
+      "n": 7,
+      "nombre": "V+",
+      "funcion": "alimentación positiva"
+    },
+    {
+      "n": 8,
+      "nombre": "NC3"
+    }
+  ],
+  "modelo": {
+    "tipo": "subcircuito",
+    "bloques": [
+      {
+        "usa": "opamp_basico",
+        "pines": [
+          "IN+",
+          "IN-",
+          "OUT",
+          "V+",
+          "V-"
+        ],
+        "parametros": {
+          "ganancia": 100000,
+          "gbw_hz": "1meg",
+          "slew_v_us": 1
+        }
+      }
+    ]
+  },
+  "pruebas": [
+    {
+      "tipo": "seguidor_de_voltaje",
+      "alimentacion_v": 12,
+      "alimentacion_negativa_v": -12,
+      "entrada_v": 5,
+      "tolerancia_v": 0.001
+    },
+    {
+      "tipo": "saturacion_salida",
+      "alimentacion_v": 12,
+      "alimentacion_negativa_v": -12,
+      "lado": "alto",
+      "esperado_v": "VCC",
+      "tolerancia_v": 0.05
+    }
+  ]
+}

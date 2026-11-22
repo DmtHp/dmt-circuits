@@ -2,7 +2,7 @@
 
 Simulador de circuitos electrónicos en el navegador, con motor de cálculo propio (análisis nodal modificado) y componentes que se pueden crear desde un archivo JSON, a mano o con ayuda de una IA. La descripción completa está en [docs/PROYECTO.md](docs/PROYECTO.md).
 
-**Estado:** Etapa 2 (motor completo sin interfaz). El motor resuelve el punto de operación DC (también con diodos, zener y op-amps que saturan, usando Newton-Raphson) y el análisis transitorio con condensadores, bobinas y fuentes de seno y pulso. Se prueba con netlists de texto; todavía no hay lienzo.
+**Estado:** Etapa 3 (formato de componentes). El motor resuelve DC y transitorio, y `components/` valida componentes en JSON con tres filtros (formato, reglas de la categoría y pruebas eléctricas contra el datasheet). El kit básico está en `components/biblioteca/`. Todavía no hay lienzo.
 
 ## Requisitos
 

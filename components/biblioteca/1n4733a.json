@@ -1,0 +1,55 @@
+{
+  "formato": "1.0",
+  "categoria": "diodo",
+  "id": "1n4733a",
+  "nombre": "1N4733A - Diodo zener 5.1 V, 1 W",
+  "fabricante": "onsemi / Vishay",
+  "encapsulado": "DO-41",
+  "fidelidad": "comportamiento",
+  "pines": [
+    {
+      "n": 1,
+      "nombre": "A",
+      "funcion": "ánodo"
+    },
+    {
+      "n": 2,
+      "nombre": "K",
+      "funcion": "cátodo (franja)"
+    }
+  ],
+  "modelo": {
+    "tipo": "subcircuito",
+    "bloques": [
+      {
+        "usa": "diodo_basico",
+        "pines": [
+          "A",
+          "K"
+        ],
+        "parametros": {
+          "is_a": 1e-12,
+          "n": 1,
+          "rs_ohm": 2,
+          "bv_v": 5.0,
+          "ibv_a": 0.049
+        }
+      }
+    ]
+  },
+  "pruebas": [
+    {
+      "tipo": "voltaje_zener",
+      "corriente_a": 0.049,
+      "minimo_v": 4.845,
+      "maximo_v": 5.355,
+      "fuente": "Datasheet 1N4728A-1N4764A: VZ = 5.1 V ± 5 % a IZT = 49 mA"
+    },
+    {
+      "tipo": "voltaje_directo",
+      "corriente_a": 0.2,
+      "maximo_v": 1.2,
+      "fuente": "Datasheet 1N4728A-1N4764A: VF máx 1.2 V a IF = 200 mA"
+    }
+  ]
+}

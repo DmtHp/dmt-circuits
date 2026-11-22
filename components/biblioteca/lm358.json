@@ -1,0 +1,129 @@
+{
+  "formato": "1.0",
+  "categoria": "amplificador_operacional",
+  "id": "lm358",
+  "nombre": "LM358 - Dos amplificadores operacionales",
+  "fabricante": "Texas Instruments y otros",
+  "encapsulado": "DIP-8",
+  "fidelidad": "comportamiento",
+  "pines": [
+    {
+      "n": 1,
+      "nombre": "OUT1",
+      "funcion": "salida 1"
+    },
+    {
+      "n": 2,
+      "nombre": "IN1-",
+      "funcion": "entrada inversora 1"
+    },
+    {
+      "n": 3,
+      "nombre": "IN1+",
+      "funcion": "entrada no inversora 1"
+    },
+    {
+      "n": 4,
+      "nombre": "GND",
+      "funcion": "tierra / alimentación negativa"
+    },
+    {
+      "n": 5,
+      "nombre": "IN2+",
+      "funcion": "entrada no inversora 2"
+    },
+    {
+      "n": 6,
+      "nombre": "IN2-",
+      "funcion": "entrada inversora 2"
+    },
+    {
+      "n": 7,
+      "nombre": "OUT2",
+      "funcion": "salida 2"
+    },
+    {
+      "n": 8,
+      "nombre": "VCC",
+      "funcion": "alimentación positiva"
+    }
+  ],
+  "modelo": {
+    "tipo": "subcircuito",
+    "bloques": [
+      {
+        "usa": "opamp_basico",
+        "pines": [
+          "IN1+",
+          "IN1-",
+          "OUT1",
+          "VCC",
+          "GND"
+        ],
+        "parametros": {
+          "ganancia": 100000,
+          "gbw_hz": "0.7meg",
+          "slew_v_us": 0.3,
+          "margen_salida_alto_v": 1.5,
+          "alimentacion_maxima_v": 32
+        }
+      },
+      {
+        "usa": "opamp_basico",
+        "pines": [
+          "IN2+",
+          "IN2-",
+          "OUT2",
+          "VCC",
+          "GND"
+        ],
+        "parametros": {
+          "ganancia": 100000,
+          "gbw_hz": "0.7meg",
+          "slew_v_us": 0.3,
+          "margen_salida_alto_v": 1.5,
+          "alimentacion_maxima_v": 32
+        }
+      }
+    ]
+  },
+  "pruebas": [
+    {
+      "tipo": "seguidor_de_voltaje",
+      "alimentacion_v": 5,
+      "entrada_v": 2,
+      "tolerancia_v": 0.005,
+      "fuente": "Datasheet TI LM358 (SLOS068), características eléctricas a 25 °C: AVD 100 V/mV típ"
+    },
+    {
+      "tipo": "saturacion_salida",
+      "alimentacion_v": 5,
+      "lado": "alto",
+      "esperado_v": "VCC - 1.5",
+      "tolerancia_v": 0.2,
+      "fuente": "Datasheet TI LM358 (SLOS068), características eléctricas a 25 °C: la salida llega hasta unos VCC − 1.5 V"
+    },
+    {
+      "tipo": "saturacion_salida",
+      "alimentacion_v": 5,
+      "lado": "bajo",
+      "esperado_v": 0.005,
+      "tolerancia_v": 0.02,
+      "fuente": "Datasheet TI LM358 (SLOS068), características eléctricas a 25 °C: VOL 5 mV típ, 20 mV máx"
+    },
+    {
+      "tipo": "slew_rate",
+      "alimentacion_v": 5,
+      "tipico_v_us": 0.3,
+      "tolerancia_pct": 20,
+      "fuente": "Datasheet TI LM358 (SLOS068), características eléctricas a 25 °C: SR 0.3 V/µs típ"
+    },
+    {
+      "tipo": "ancho_de_banda",
+      "alimentacion_v": 5,
+      "gbw_hz": "0.7meg",
+      "tolerancia_pct": 25,
+      "fuente": "Datasheet TI LM358 (SLOS068), características eléctricas a 25 °C: ancho de banda de ganancia unitaria 0.7 MHz típ"
+    }
+  ]
+}

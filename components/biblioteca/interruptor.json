@@ -1,0 +1,45 @@
+{
+  "formato": "1.0",
+  "categoria": "pasivo",
+  "id": "interruptor",
+  "nombre": "Interruptor",
+  "descripcion": "Interruptor de dos posiciones: cerrado = 1, abierto = 0.",
+  "encapsulado": "SIP-2",
+  "fidelidad": "ideal",
+  "pines": [
+    {
+      "n": 1,
+      "nombre": "A"
+    },
+    {
+      "n": 2,
+      "nombre": "B"
+    }
+  ],
+  "modelo": {
+    "tipo": "subcircuito",
+    "bloques": [
+      {
+        "usa": "interruptor",
+        "pines": [
+          "A",
+          "B"
+        ],
+        "parametros": {
+          "cerrado": 0
+        }
+      }
+    ]
+  },
+  "pruebas": [
+    {
+      "tipo": "resistencia_entre_pines",
+      "pines": [
+        "A",
+        "B"
+      ],
+      "esperado_ohm": "1meg * 1k",
+      "tolerancia_pct": 1
+    }
+  ]
+}
