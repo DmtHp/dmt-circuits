@@ -209,7 +209,20 @@ El riesgo técnico mayor es la precisión y estabilidad del motor; el riesgo de 
 
 Se trabaja una etapa a la vez, y cada una se cierra solo cuando cumple su criterio de listo.
 
-&#91;embedded content: hoja de ruta · 6 etapas y la puerta del MVP\]
+El motor se termina y prueba antes de construir la interfaz.
+
+| Etapa | Contenido | Criterio de listo |
+| --- | --- | --- |
+| 0 · Base | Repositorio, TypeScript, Vite; pruebas con Vitest y lint; separar motor e interfaz | Pruebas y web publicada |
+| 1 · Motor DC lineal | MNA con R y fuentes V, I; matriz dispersa y solver; lector de netlist de prueba | Iguala el cálculo a mano |
+| 2 · No lineal | Diodo con Newton-Raphson; C, L y análisis transitorio; op-amp con saturación | RC y rectificador bien |
+| 3 · Componentes | Esquema JSON y categorías; validación en tres filtros; LM324 con pruebas de datasheet | El LM324 pasa su prueba |
+| 4 · Interfaz | Lienzo, símbolo y encapsulado; motor en un Web Worker; instrumentos y avisos reales | Simula en tiempo real |
+| 5 · Crear con IA | Un botón, sin menús; detección de categoría; instrucciones para la IA | Flujo de punta a punta |
+
+**Puerta MVP:** un LM324 hecho con IA funciona en un comparador.
+
+**Después del MVP.** Primero: ngspice como modo precisión, modo laboratorio, exportar a SPICE. Luego: BJT y MOSFET, análisis AC, modelos SPICE de fabricantes, núcleo en Rust + WebAssembly.
 
 Las etapas 1 y 2 se prueban sin interfaz, con circuitos escritos como texto; así los errores del motor no se confunden con errores de la pantalla.
 
