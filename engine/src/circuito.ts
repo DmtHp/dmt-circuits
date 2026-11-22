@@ -179,8 +179,18 @@ export interface Limitador extends ElementoBase {
   ganancia: number;
   minimo_v: number;
   maximo_v: number;
-  /** Qué tan redondeada es la esquina, en voltios. Por defecto 1 % de (máximo − mínimo). */
+  /**
+   * Qué tan redondeada es la esquina, en voltios. Por defecto 1 % de (máximo − mínimo),
+   * o 0.02 V si hay topes relativos a nodos.
+   */
   suavidad_v?: number;
+  /**
+   * Si se indica, el tope superior sigue a este nodo: V(+) − V(−) ≤ V(referenciaMaxima) − V(−) + maximo_v.
+   * Ejemplo: referenciaMaxima = "vcc" y maximo_v = −1.5 da un tope en "VCC − 1.5 V".
+   */
+  referenciaMaxima?: Nodo;
+  /** Igual para el tope inferior: V(+) − V(−) ≥ V(referenciaMinima) − V(−) + minimo_v. */
+  referenciaMinima?: Nodo;
 }
 
 export type Elemento =

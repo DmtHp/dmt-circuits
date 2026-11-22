@@ -212,6 +212,37 @@ describe('limitador suave', () => {
   });
 });
 
+describe('limitador con topes relativos a la alimentación', () => {
+  const comparador = (vcc: number, entrada: number) =>
+    resolver(`
+      VCC vcc 0 ${vcc}
+      VIN entrada 0 ${entrada}
+      VREF ref 0 2.5
+      A1 salida 0 entrada ref GANANCIA=100k MIN=0 MAX=-1.5 RMAX=vcc RMIN=0
+      RL salida 0 10k
+    `);
+
+  it.each([5, 12, 30])('con VCC = %d V satura arriba en VCC − 1.5 V', (vcc) => {
+    // Entrada 3 V > referencia 2.5 V: la salida sube hasta su tope, VCC − 1.5 V.
+    expect(v(comparador(vcc, 3), 'salida')).toBeCloseTo(vcc - 1.5, 6);
+  });
+
+  it('satura abajo en 0 V', () => {
+    expect(v(comparador(12, 2), 'salida')).toBeCloseTo(0, 6);
+  });
+
+  it('en zona lineal copia la entrada aunque VCC cambie', () => {
+    const r = resolver(`
+      VCC vcc 0 9
+      VIN entrada 0 2
+      A1 salida 0 entrada 0 MIN=0 MAX=-1.5 RMAX=vcc RMIN=0
+      RL salida 0 10k
+    `);
+    // 2 V está lejos de 0 V y de 9 − 1.5 = 7.5 V: la salida es 2 V.
+    expect(v(r, 'salida')).toBeCloseTo(2, 9);
+  });
+});
+
 describe('convergencia', () => {
   it('si no logra converger, lo dice y nombra el diodo', () => {
     const circuito = leerNetlist(`

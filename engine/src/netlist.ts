@@ -17,8 +17,9 @@
  *   G<nombre> desde hacia c+ c− gm   fuente de corriente controlada por voltaje (VCCS, en S)
  *   D<nombre> ánodo cátodo [IS=…] [N=…] [BV=…] [IBV=…]
  *                                    diodo (BV: voltaje de ruptura, para zener)
- *   A<nombre> + − c+ c− MIN=… MAX=… [GANANCIA=…] [SUAVIDAD=…]
- *                                    limitador suave (ganancia 1 si no se indica)
+ *   A<nombre> + − c+ c− MIN=… MAX=… [GANANCIA=…] [SUAVIDAD=…] [RMAX=nodo] [RMIN=nodo]
+ *                                    limitador suave (ganancia 1 si no se indica); con RMAX/RMIN
+ *                                    los topes son relativos a esos nodos (MAX=-1.5 RMAX=vcc → VCC − 1.5 V)
  *
  * - El nodo "0" (o "gnd") es tierra.
  * - Líneas que empiezan con "*" son comentarios; lo que sigue a ";" en una línea también.
@@ -261,7 +262,17 @@ export function leerNetlist(texto: string): Circuito {
         break;
       }
       case 'A': {
-        exigirMinimo(7, 'A<nombre> + − c+ c− MIN=… MAX=… [GANANCIA=…] [SUAVIDAD=…]');
+        exigirMinimo(7, 'A<nombre> + − c+ c− MIN=… MAX=… [GANANCIA=…] [SUAVIDAD=…] [RMAX=nodo] [RMIN=nodo]');
+        // RMAX y RMIN llevan un nodo, no un número: se sacan antes de leer los parámetros numéricos.
+        const referencias = new Map<string, string>();
+        for (let k = partes.length - 1; k >= 5; k--) {
+          const [clave, nodo] = partes[k]!.split('=');
+          const nombreClave = clave?.toUpperCase();
+          if ((nombreClave === 'RMAX' || nombreClave === 'RMIN') && nodo) {
+            referencias.set(nombreClave, nodo);
+            partes.splice(k, 1);
+          }
+        }
         const p = parametros(5, ['MIN', 'MAX', 'GANANCIA', 'SUAVIDAD'], ['MIN', 'MAX']);
         const limitador: Limitador = {
           tipo: 'limitador',
@@ -275,6 +286,8 @@ export function leerNetlist(texto: string): Circuito {
           maximo_v: p.get('MAX')!,
         };
         if (p.has('SUAVIDAD')) limitador.suavidad_v = p.get('SUAVIDAD')!;
+        if (referencias.has('RMAX')) limitador.referenciaMaxima = referencias.get('RMAX')!;
+        if (referencias.has('RMIN')) limitador.referenciaMinima = referencias.get('RMIN')!;
         elementos.push(limitador);
         break;
       }
